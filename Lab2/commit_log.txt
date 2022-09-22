@@ -1,0 +1,11 @@
+commit 99c391829c37e4faa9595119bc2c5b0c05328b79
+Author: Sydney Macdonald <sydneymacdonald@uvic.ca>
+Date:   Thu Sep 22 16:40:49 2022 -0700
+
+    added the commmit_log.txt file
+
+commit 1993f2e7a2b4074ff8a9cb077e38364d8c76062b
+Author: Lynn Palmer <lpalmer@uvic.ca>
+Date:   Fri Sep 9 11:37:42 2022 -0700
+
+    initial
