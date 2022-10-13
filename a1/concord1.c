@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 #define MAX_LINE_NUM 100
 #define MAX_LINE_LENGTH 70+1
@@ -8,10 +9,11 @@
 #define MAX_EXCL_WORD_LENGTH 20+1
 #define MAX_NUM_INDEX_WORDS 100
 
-/*void get_exclusion_words(char *excl);*/
-void print_array(int num, char *str);
 int check_if_excl(char *tok, int num);
 void remove_newlines(char *str);
+int compare_words(const void * a, const void * b);
+int check_if_index_word(char *tok, char *word);
+void print_line(char *line, char *index_word);
 
 char excl_words[MAX_EXCL_WORD_NUM][MAX_EXCL_WORD_LENGTH];
 char lines[MAX_LINE_NUM][MAX_LINE_LENGTH];
@@ -22,8 +24,7 @@ int main(){
 
 	fgets(first_lines, MAX_EXCL_WORD_LENGTH-1, stdin);
 	fgets(first_lines, MAX_EXCL_WORD_LENGTH-1, stdin);
-	/*get_exclusion_words(excl_words);
-	print_array(MAX_EXCL_WORD_NUM, excl_words);*/
+
 	//read in excl words
 	char *cur_line;
 	cur_line = fgets(excl_words[0], MAX_EXCL_WORD_LENGTH -1, stdin);
@@ -34,16 +35,16 @@ int main(){
 		cur_line = fgets(excl_words[num_excl_words], MAX_EXCL_WORD_LENGTH-1, stdin);
 		remove_newlines(excl_words[num_excl_words]);
 	}
-	printf("exclusion words:\n");
+	/*printf("exclusion words:\n");
 	for(int i = 0; i < num_excl_words; i++){
-		printf("%s", excl_words[i]);
-	}
+		printf("%s\n", excl_words[i]);
+	}*/
 
 	//read in everything
-	printf("input lines:\n");
 	int num_lines = 0;
 	while(fgets(lines[num_lines], MAX_LINE_LENGTH-1, stdin) != NULL){
-		printf("%s", lines[num_lines]);
+		remove_newlines(lines[num_lines]);
+		/*printf("%s\n", lines[num_lines]);*/
 		num_lines++;
 	}
 
@@ -62,10 +63,27 @@ int main(){
 			token = strtok(NULL, " ");
 		}
 	}
-	printf("words to index:\n");
+	/*printf("words to index:\n");
 	for(int i = 0; i < num_indexes; i++){
 		printf("%s\n", indexed_lines[i]);
+	}*/
+	/*sort words to index*/
+	qsort(indexed_lines[0], num_indexes, sizeof(char)*MAX_LINE_LENGTH, compare_words);
+
+	for(int i = 0; i < num_indexes; i++){
+		for(int j = 0; j < num_lines; j++){
+			strncpy(current_line, lines[j], MAX_LINE_LENGTH);
+			char *token = strtok(current_line, " ");
+			while(token != NULL){
+				if(check_if_index_word(token, indexed_lines[i])){
+					/*output line*/
+					print_line(lines[j], indexed_lines[i]);
+				}
+				token = strtok(NULL, " ");
+			}
+		}
 	}
+
 }
 
 int check_if_excl(char *tok, int num){
@@ -86,20 +104,35 @@ void remove_newlines(char *str){
 		str[num-1] = '\0';
 	}
 }
-/*void get_exclusion_words(char **excl){
-	char **cur_line;
-	cur_line = fgets(excl[0], MAX_EXCL_WORD_LENGTH, stdin);
-	char stop_point = "\"\"\"\"";
-	int i = 1;
-	while(strncmp(cur_line, stop_point, 5) != 0){
-		cur_line = fgets(excl[i], MAX_EXCL_WORD_LENGTH, stdin);
-		i++;
+
+int compare_words(const void * a, const void * b){
+	return strncmp(a, b, MAX_LINE_LENGTH);
+}
+
+int check_if_index_word(char *tok, char *word){
+	if(strncmp(tok, word, MAX_LINE_LENGTH) == 0){
+		return 1;
 	}
-	
-}*/
-/*
-void print_array(char str[num][other_num]){
-	for(int i = 0; i < num; i++){
-		printf("%s", str[i]);
+	else{
+		return 0;
 	}
-}*/
+}
+
+void print_line(char *line, char *index_word){
+	char this_line[MAX_LINE_LENGTH];
+	strncpy(this_line, line, MAX_LINE_LENGTH);
+	char *token = strtok(this_line, " ");
+	while(token != NULL){
+		if(strncmp(token, index_word, MAX_LINE_LENGTH) == 0){
+			int len = strlen(token);
+			for(int i = 0; i < len; i++){
+				printf("%c", toupper(token[i]));
+			}
+			printf(" ");
+		}else{
+			printf("%s ", token);
+		}
+		token = strtok(NULL, " ");
+	}
+	printf("\n");
+}
