@@ -128,11 +128,13 @@ void print_line(char *line, char *index_word){
 			for(int i = 0; i < len; i++){
 				printf("%c", toupper(token[i]));
 			}
-			printf(" ");
 		}else{
-			printf("%s ", token);
+			printf("%s", token);
 		}
 		token = strtok(NULL, " ");
+		if(token != NULL){
+			printf(" ");
+		}
 	}
 	printf("\n");
 }
