@@ -10,6 +10,7 @@
 #define MAX_NUM_INDEX_WORDS 100
 
 int check_if_excl(char *tok, int num);
+int check_if_duplicate(char *tok, int num);
 void remove_newlines(char *str);
 int compare_words(const void * a, const void * b);
 int check_if_index_word(char *tok, char *word);
@@ -51,9 +52,12 @@ int main(){
 		char *token = strtok(current_line, " ");
 		while(token != NULL){
 			if(check_if_excl(token, num_excl_words)){
-				/*yes index*/
-				strncpy(indexed_lines[num_indexes], token, MAX_LINE_LENGTH);
-				num_indexes++;
+				/*not exclusion word*/
+				if(check_if_duplicate(token, num_indexes)){
+					/*yes index*/
+					strncpy(indexed_lines[num_indexes], token, MAX_LINE_LENGTH);
+					num_indexes++;
+				}
 			}
 			token = strtok(NULL, " ");
 		}
@@ -81,6 +85,15 @@ int main(){
 int check_if_excl(char *tok, int num){
 	for(int j = 0; j < num; j++){
 		if(strncmp(tok, excl_words[j], MAX_EXCL_WORD_LENGTH) == 0){
+			return 0;
+		}
+	}
+	return 1;
+}
+
+int check_if_duplicate(char *tok, int num){
+	for(int j = 0; j < num; j++){
+		if(strncmp(tok, indexed_lines[j], MAX_LINE_LENGTH) == 0){
 			return 0;
 		}
 	}
