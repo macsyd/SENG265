@@ -35,16 +35,11 @@ int main(){
 		cur_line = fgets(excl_words[num_excl_words], MAX_EXCL_WORD_LENGTH-1, stdin);
 		remove_newlines(excl_words[num_excl_words]);
 	}
-	/*printf("exclusion words:\n");
-	for(int i = 0; i < num_excl_words; i++){
-		printf("%s\n", excl_words[i]);
-	}*/
 
 	//read in everything
 	int num_lines = 0;
 	while(fgets(lines[num_lines], MAX_LINE_LENGTH-1, stdin) != NULL){
 		remove_newlines(lines[num_lines]);
-		/*printf("%s\n", lines[num_lines]);*/
 		num_lines++;
 	}
 
@@ -63,10 +58,7 @@ int main(){
 			token = strtok(NULL, " ");
 		}
 	}
-	/*printf("words to index:\n");
-	for(int i = 0; i < num_indexes; i++){
-		printf("%s\n", indexed_lines[i]);
-	}*/
+	
 	/*sort words to index*/
 	qsort(indexed_lines[0], num_indexes, sizeof(char)*MAX_LINE_LENGTH, compare_words);
 
