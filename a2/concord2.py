@@ -27,7 +27,18 @@ def print_line(line, index):
 	for each in line[index]:
 		output[ind] = each
 		ind += 1
-	print(output)
+	ind += 1
+	length = len(line)
+	for i in range(index+1, length-1):
+		for each in line[i]:
+			if(ind < 70):
+				output[ind] = each
+				ind += 1
+			else:
+				break
+		ind += 1
+	#for each in line:
+	print("".join(output))
 	#print(out_line)
 
 def find_indexes(index_word, index_lines):
@@ -51,7 +62,7 @@ def main():
 	
 	if(all_input[0] == "1"):
 		print("Input is version 1, concord2.py expected version 2")
-		sys.exit()
+		exit()
 	
 	divider = all_input.index("\"\"\"\"")
 	excl_words = all_input[2:divider]
