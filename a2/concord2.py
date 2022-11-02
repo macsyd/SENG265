@@ -15,6 +15,14 @@ def check_excl(line, excl_words):
 			index_words.append(each_word)
 	
 	return index_words
+def format_front_line(line):
+	front_line = ""
+	for i in range(len(line), 0, -1):
+		if((30 - 1 - len(line[i])) >= 10):
+			front_line = " ".join([line[i], front_line])
+		else:
+			break
+	return front_line
 
 def print_line(line, index):
 	line[index] = line[index].upper()
@@ -23,22 +31,28 @@ def print_line(line, index):
 	output = []
 	for i in range(70):
 		output.append(" ")
-	ind = 30-1
-	for each in line[index]:
-		output[ind] = each
-		ind += 1
-	ind += 1
-	length = len(line)
-	for i in range(index+1, length-1):
-		for each in line[i]:
-			if(ind < 70):
-				output[ind] = each
-				ind += 1
-			else:
-				break
-		ind += 1
+	#ind = 30-1
+	#for each in line[index]:
+		#output[ind] = each
+		#ind += 1
+	front_line = " "*9 + format_front_line(line[:index])
+	output_line = " ".join([front_line, line[index]])
+	#ind += 1
+	ind = 30 + len(line[index]) + 1
+	
+	for i in range(index+1, len(line)):
+		if((len(line[i]) + 1 + ind) <= 60):
+			#add to output
+			output_line = " ".join([output_line, line[i]])
+			ind += 1 + len(line[i])
+		else:
+			break
+		#for each in line[i]:
+	
+		#ind += 1
 	#for each in line:
-	print("".join(output))
+	#print("".join(output))
+	print(output_line)
 	#print(out_line)
 
 def find_indexes(index_word, index_lines):
