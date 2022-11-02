@@ -17,11 +17,16 @@ def check_excl(line, excl_words):
 	return index_words
 def format_front_line(line):
 	front_line = ""
-	for i in range(len(line), 0, -1):
-		if((30 - 1 - len(line[i])) >= 10):
+	index = 30
+	for i in range(len(line)-1, 0-1, -1):
+		if((index - 1 - len(line[i])) >= 10):
 			front_line = " ".join([line[i], front_line])
+			index -= len(line[i]) + 1
 		else:
 			break
+	if(index > 10):
+		front_line = "".join([" "*(index-10), front_line])
+	
 	return front_line
 
 def print_line(line, index):
@@ -36,7 +41,7 @@ def print_line(line, index):
 		#output[ind] = each
 		#ind += 1
 	front_line = " "*9 + format_front_line(line[:index])
-	output_line = " ".join([front_line, line[index]])
+	output_line = "".join([front_line, line[index]])
 	#ind += 1
 	ind = 30 + len(line[index]) + 1
 	
