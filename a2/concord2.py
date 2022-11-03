@@ -2,6 +2,8 @@
 
 import sys
 
+#Checks each word in the line, if it is not an exclusion word,
+#it is added to a list of words to index
 def check_excl(line, excl_words):
 	index_words = []
 	if(line == ""):
@@ -18,6 +20,7 @@ def check_excl(line, excl_words):
 	
 	return index_words
 
+#Formats the beginning of the output string with correct spacing
 def format_front_line(line):
 	front_line = ""
 	index = 30
@@ -32,6 +35,7 @@ def format_front_line(line):
 	
 	return front_line
 
+#Prints the formatted line
 def print_line(line, index):
 	line[index] = line[index].upper()
 	
@@ -49,6 +53,7 @@ def print_line(line, index):
 	output_line = output_line.rstrip()
 	print(output_line)
 
+#Searches each line for the index word, if found, it outputs the formatted line
 def find_indexes(index_word, index_lines):
 	for each_line in index_lines:
 		line = each_line.split(" ")
