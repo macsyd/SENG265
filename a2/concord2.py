@@ -4,17 +4,20 @@ import sys
 
 def check_excl(line, excl_words):
 	index_words = []
+	if(line == ""):
+		return index_words
 	temp = line.split(" ")
 	for each_word in temp:
 		is_excl = False
 		for excl_word in excl_words:
-			if(each_word == excl_word):
+			if(each_word.upper() == excl_word.upper()):
 				is_excl = True
 				break
 		if(not is_excl):
-			index_words.append(each_word)
+			index_words.append(each_word.lower())
 	
 	return index_words
+
 def format_front_line(line):
 	front_line = ""
 	index = 30
@@ -31,41 +34,29 @@ def format_front_line(line):
 
 def print_line(line, index):
 	line[index] = line[index].upper()
-	out_line = " ".join(line)
-	#out_line = out_line.split("")
-	output = []
-	for i in range(70):
-		output.append(" ")
-	#ind = 30-1
-	#for each in line[index]:
-		#output[ind] = each
-		#ind += 1
+	
 	front_line = " "*9 + format_front_line(line[:index])
 	output_line = "".join([front_line, line[index]])
-	#ind += 1
-	ind = 30 + len(line[index]) + 1
+	ind = 30 + len(line[index])
 	
 	for i in range(index+1, len(line)):
-		if((len(line[i]) + 1 + ind) <= 60):
+		if((len(line[i]) + 1 + ind) <= 61):
 			#add to output
 			output_line = " ".join([output_line, line[i]])
 			ind += 1 + len(line[i])
 		else:
 			break
-		#for each in line[i]:
-	
-		#ind += 1
-	#for each in line:
-	#print("".join(output))
+	output_line = output_line.rstrip()
 	print(output_line)
-	#print(out_line)
 
 def find_indexes(index_word, index_lines):
 	for each_line in index_lines:
-		temp_line = each_line.split(" ")
+		line = each_line.split(" ")
+		temp_line = each_line.lower()
+		temp_line = temp_line.split(" ")
 		for each_word in temp_line:
 			if(each_word == index_word):
-				print_line(temp_line, temp_line.index(index_word))
+				print_line(line, temp_line.index(index_word))
 		
 
 def main():
