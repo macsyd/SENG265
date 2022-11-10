@@ -12,6 +12,8 @@
 #include "emalloc.h"
 #include "seng265-list.h"
 
+#define MAX_WORD_LEN 40
+#define MAX_LINE_LEN 100
 
 void print_word(node_t *node, void *arg)
 {
@@ -79,7 +81,13 @@ printf("DEBUG: in _demo\n");
 int main(int argc, char *argv[])
 {
     int i;  
-
+    char *buffer;
+    size_t buffer_len;
+    getline(buffer, buffer_len, stdin);
+    if(strncmp(buffer, "1\n", buffer_len) == 0){
+        printf("Input is version 1, concord3 expected version 2");
+        exit(0);
+    }
 
 /* 
  * Showing some simple usage of the linked-list routines.
