@@ -78,17 +78,46 @@ printf("DEBUG: in _demo\n");
 
 
 
-int main(int argc, char *argv[])
-{
-    int i;  
+node_t *read_excl_words(){
+    node_t *excl_head = NULL;
     char *buffer;
     size_t buffer_len;
-    getline(buffer, buffer_len, stdin);
+    getline(&buffer, &buffer_len, stdin);
     if(strncmp(buffer, "1\n", buffer_len) == 0){
-        printf("Input is version 1, concord3 expected version 2");
+        printf("Input is version 1, concord3 expected version 2\n");
         exit(0);
     }
+    getline(&buffer, &buffer_len, stdin);
+    getline(&buffer, &buffer_len, stdin);
+    while(strncmp(buffer, "\"\"\"\"\n", buffer_len) != 0){
+        char *temp_str = emalloc(sizeof(char)*buffer_len);
+        strncpy(temp_str, buffer, buffer_len);
+        node_t *temp_node = new_node(temp_str);
+        excl_head = add_front(excl_head, temp_node);
+        getline(&buffer, &buffer_len, stdin);
+    }
+    return excl_head;
+}
 
+node_t *read_lines(){
+    node_t *lines_head = NULL;
+    char *buffer;
+    size_t buffer_len;
+    while(getline(&buffer, &buffer_len, stdin) != -1){
+        char *temp_str = emalloc(sizeof(char)*buffer_len);
+        strncpy(temp_str, buffer, buffer_len);
+        node_t *temp_node = new_node(temp_str);
+        lines_head = add_end(lines_head, temp_node);
+    }
+    return lines_head;
+}
+
+int main(int argc, char *argv[]){
+    node_t *excl_words = read_excl_words();
+    node_t *input_lines = read_lines();
+
+    //read_input(excl_words, input_lines);
+    printf("%s", input_lines->text);
 /* 
  * Showing some simple usage of the linked-list routines.
  */
