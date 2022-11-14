@@ -112,12 +112,23 @@ node_t *read_lines(){
     return lines_head;
 }
 
+void free_lists(node_t *n){
+    while(n != NULL){
+        node_t *temp = n->next;
+        free(n);
+        n = temp;
+    }
+}
+
 int main(int argc, char *argv[]){
     node_t *excl_words = read_excl_words();
     node_t *input_lines = read_lines();
 
     //read_input(excl_words, input_lines);
     printf("%s", input_lines->text);
+
+    free_lists(excl_words);
+    free_lists(input_lines);
 /* 
  * Showing some simple usage of the linked-list routines.
  */
