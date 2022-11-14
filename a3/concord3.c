@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include "emalloc.h"
 #include "seng265-list.h"
 
@@ -76,7 +77,18 @@ printf("DEBUG: in _demo\n");
 
 #endif
 
-
+node_t *get_index_words(node_t *excl_words, char *line){
+    char *temp = strncpy(temp, line, strlen(line));
+    char *token = strtok(temp, " ");
+    while(token != NULL){
+        node_t *list = excl_words;
+        for( ; list != NULL; list = list->next){
+            if(strncmp(token, list.text, strlen(token)) != 0){
+                add_inorder(index_words, new_node(token));
+            }
+        }
+    }
+}
 
 node_t *read_excl_words(){
     node_t *excl_head = NULL;
@@ -108,6 +120,7 @@ node_t *read_lines(){
         strncpy(temp_str, buffer, buffer_len);
         node_t *temp_node = new_node(temp_str);
         lines_head = add_end(lines_head, temp_node);
+        
     }
     return lines_head;
 }
@@ -124,7 +137,7 @@ int main(int argc, char *argv[]){
     node_t *excl_words = read_excl_words();
     node_t *input_lines = read_lines();
 
-    //read_input(excl_words, input_lines);
+    
     printf("%s", input_lines->text);
 
     free_lists(excl_words);
