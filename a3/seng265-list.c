@@ -25,9 +25,11 @@ node_t *new_node(char *text) {
     return temp;
 }
 
-int compare(char *str1, char *str1){
-    char *temp1 = strncpy(temp1, str1, strlen(str1));
-    char *temp2 = strncpy(temp2, str2, strlen(str2));
+int compare(char *str1, char *str2){
+    char temp1[strlen(str1)];
+    strncpy(temp1, str1, strlen(str1));
+    char temp2[strlen(str2)];
+    strncpy(temp2, str2, strlen(str2));
     for(int i = 0; i < strlen(str1); i++){
         temp1[i] = toupper(temp1[i]);
     }
@@ -65,13 +67,13 @@ node_t *add_inorder(node_t *list, node_t *new){
     node_t *curr = list;
     node_t *prev = NULL;
     for ( ; curr->next != NULL; curr = curr->next){
-        if(compare(curr.text, new.text) > 0){
+        if(compare(curr->text, new->text) > 0){
             if(prev == NULL){
                 return add_front(curr, new);
             }
-            prev.next = add_front(curr, new);
+            prev->next = add_front(curr, new);
             return list;
-        }else if(compare(list.text, new.text) == 0){
+        }else if(compare(list->text, new->text) == 0){
             return list; /*get rid of duplicates*/
         }
         prev = curr;

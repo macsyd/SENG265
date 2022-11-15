@@ -77,17 +77,20 @@ printf("DEBUG: in _demo\n");
 
 #endif
 
-node_t *get_index_words(node_t *excl_words, char *line){
-    char *temp = strncpy(temp, line, strlen(line));
+node_t *get_index_words(node_t *index_words, node_t *line, node_t *excl){
+    char temp[strlen(line->text)];
+    strncpy(temp, line->text, strlen(line->text));
     char *token = strtok(temp, " ");
     while(token != NULL){
-        node_t *list = excl_words;
+        node_t *list = excl;
         for( ; list != NULL; list = list->next){
-            if(strncmp(token, list.text, strlen(token)) != 0){
-                add_inorder(index_words, new_node(token));
+            if(strncmp(token, list->text, strlen(token)) != 0){
+                index_words = add_inorder(index_words, new_node(token));
             }
         }
+        token = strtok(NULL, " ");
     }
+    return index_words;
 }
 
 node_t *read_excl_words(){
@@ -102,9 +105,9 @@ node_t *read_excl_words(){
     getline(&buffer, &buffer_len, stdin);
     getline(&buffer, &buffer_len, stdin);
     while(strncmp(buffer, "\"\"\"\"\n", buffer_len) != 0){
-        char *temp_str = emalloc(sizeof(char)*buffer_len);
-        strncpy(temp_str, buffer, buffer_len);
-        node_t *temp_node = new_node(temp_str);
+        //char *temp_str = emalloc(sizeof(char)*buffer_len);
+        //strncpy(temp_str, buffer, buffer_len);
+        node_t *temp_node = new_node(buffer);
         excl_head = add_front(excl_head, temp_node);
         getline(&buffer, &buffer_len, stdin);
     }
@@ -116,9 +119,9 @@ node_t *read_lines(){
     char *buffer;
     size_t buffer_len;
     while(getline(&buffer, &buffer_len, stdin) != -1){
-        char *temp_str = emalloc(sizeof(char)*buffer_len);
-        strncpy(temp_str, buffer, buffer_len);
-        node_t *temp_node = new_node(temp_str);
+        //char *temp_str = emalloc(sizeof(char)*buffer_len);
+        //strncpy(temp_str, buffer, buffer_len);
+        node_t *temp_node = new_node(buffer);
         lines_head = add_end(lines_head, temp_node);
         
     }
@@ -136,12 +139,17 @@ void free_lists(node_t *n){
 int main(int argc, char *argv[]){
     node_t *excl_words = read_excl_words();
     node_t *input_lines = read_lines();
-
+    node_t *index_words;
     
+    node_t *temp_list = input_lines;
+    for( ; temp_list != NULL; temp_list = temp_list->next){
+        index_words = get_index_words(index_words, input_lines, excl_words);
+    }
     printf("%s", input_lines->text);
-
+    printf("%s", index_words->text);
     free_lists(excl_words);
     free_lists(input_lines);
+    free_lists(index_words);
 /* 
  * Showing some simple usage of the linked-list routines.
  */
