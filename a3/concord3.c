@@ -77,12 +77,12 @@ printf("DEBUG: in _demo\n");
 
 #endif
 
-node_t *get_index_words(node_t *index_words, node_t *lines, node_t *excl){
+node_t *get_index_words(node_t *lines, node_t *excl){
+    node_t *index_words = NULL;
     node_t *temp_list = lines;
-    
     for( ; temp_list != NULL; temp_list = temp_list->next){
-        char temp[strlen(temp_list->text)];
-        strncpy(temp, temp_list->text, strlen(temp_list->text));
+        char temp[MAX_LINE_LEN];
+        strncpy(temp, temp_list->text, MAX_LINE_LEN);
         char *token = strtok(temp, " ");
         while(token != NULL){
             node_t *list = excl;
@@ -145,6 +145,26 @@ node_t *read_lines(){
     return lines_head;
 }
 
+void print_line(char *word, char *line){
+    printf("%s\n", line);
+}
+
+void output_lines(node_t *list, void *lines){
+    char *word = list->text;
+    node_t *temp_list = lines;
+    for( ; temp_list != NULL; temp_list = temp_list->next){
+        char temp[MAX_LINE_LEN];
+        strncpy(temp, temp_list->text, MAX_LINE_LEN);
+        char *token = strtok(temp, " ");
+        while(token != NULL){
+            if(compare(word, token) == 0){
+                print_line(word, temp_list->text);
+            }
+            token = strtok(NULL, " ");
+        }
+    }
+}
+
 void free_lists(node_t *n){
     while(n != NULL){
         node_t *temp = n->next;
@@ -156,19 +176,18 @@ void free_lists(node_t *n){
 int main(int argc, char *argv[]){
     node_t *excl_words = read_excl_words();
     node_t *input_lines = read_lines();
-    node_t *index_words = NULL;
-    index_words = get_index_words(index_words, input_lines, excl_words);
-    
-    node_t *temp_list = input_lines;
-    for( ; temp_list != NULL; temp_list = temp_list->next){
-        //printf("%s\n", temp_list->text);
-        //index_words = get_index_words(index_words, input_lines, excl_words);
-        //printf("%s\n", index_words->text);
-    }
-    //printf("%s", input_lines->text);
-    //printf("%s", index_words->text);
+    node_t *index_words = get_index_words(input_lines, excl_words);
+
+    apply(index_words, output_lines, input_lines);
+
+    //node_t *temp_list = index_words;
+    //for( ; temp_list != NULL; temp_list = temp_list->next){
+        //output_lines(temp_list->text, input_lines);
+        
+    //}
+
     printf("--\n");
-    temp_list = index_words;
+    node_t *temp_list = index_words;
     for( ; temp_list != NULL; temp_list = temp_list->next){
         printf("%s\n", temp_list->text);
     }

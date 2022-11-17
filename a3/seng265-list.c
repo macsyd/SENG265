@@ -66,7 +66,7 @@ node_t *add_inorder(node_t *list, node_t *new){
     }
     node_t *curr = list;
     node_t *prev = NULL;
-    for ( ; curr->next != NULL; curr = curr->next){
+    for ( ; curr != NULL; curr = curr->next){
         if(compare(curr->text, new->text) > 0){
             if(prev == NULL){
                 return add_front(curr, new);
