@@ -77,23 +77,27 @@ printf("DEBUG: in _demo\n");
 
 #endif
 
-node_t *get_index_words(node_t *index_words, node_t *line, node_t *excl){
-    char temp[strlen(line->text)];
-    strncpy(temp, line->text, strlen(line->text));
-    char *token = strtok(temp, " ");
-    while(token != NULL){
-        node_t *list = excl;
-        int isExcl = 0;
-        for( ; list != NULL; list = list->next){
-            if(strncmp(token, list->text, strlen(token)) == 0){
-                isExcl = 1;
-                break;
+node_t *get_index_words(node_t *index_words, node_t *lines, node_t *excl){
+    node_t *temp_list = lines;
+    
+    for( ; temp_list != NULL; temp_list = temp_list->next){
+        char temp[strlen(temp_list->text)];
+        strncpy(temp, temp_list->text, strlen(temp_list->text));
+        char *token = strtok(temp, " ");
+        while(token != NULL){
+            node_t *list = excl;
+            int isExcl = 0;
+            for( ; list != NULL; list = list->next){
+                if(strncmp(token, list->text, strlen(token)) == 0){
+                    isExcl = 1;
+                    break;
+                }
             }
+            if(!isExcl){
+                index_words = add_inorder(index_words, new_node(token));
+            }
+            token = strtok(NULL, " ");
         }
-        if(!isExcl){
-            index_words = add_inorder(index_words, new_node(token));
-        }
-        token = strtok(NULL, " ");
     }
     return index_words;
 }
@@ -152,15 +156,18 @@ void free_lists(node_t *n){
 int main(int argc, char *argv[]){
     node_t *excl_words = read_excl_words();
     node_t *input_lines = read_lines();
-    node_t *index_words;
+    node_t *index_words = NULL;
+    index_words = get_index_words(index_words, input_lines, excl_words);
     
     node_t *temp_list = input_lines;
     for( ; temp_list != NULL; temp_list = temp_list->next){
         //printf("%s\n", temp_list->text);
-        index_words = get_index_words(index_words, input_lines, excl_words);
+        //index_words = get_index_words(index_words, input_lines, excl_words);
+        //printf("%s\n", index_words->text);
     }
-    printf("%s", input_lines->text);
-    printf("%s", index_words->text);
+    //printf("%s", input_lines->text);
+    //printf("%s", index_words->text);
+    printf("--\n");
     temp_list = index_words;
     for( ; temp_list != NULL; temp_list = temp_list->next){
         printf("%s\n", temp_list->text);
