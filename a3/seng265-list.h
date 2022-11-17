@@ -1,7 +1,7 @@
 #ifndef _LINKEDLIST_H_
 #define _LINKEDLIST_H_
 
-#define LIST_MAXLEN_TEXT 50
+#define LIST_MAXLEN_TEXT 100
 
 typedef struct node_t {
     char text[LIST_MAXLEN_TEXT];

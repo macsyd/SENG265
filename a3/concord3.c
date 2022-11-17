@@ -83,10 +83,15 @@ node_t *get_index_words(node_t *index_words, node_t *line, node_t *excl){
     char *token = strtok(temp, " ");
     while(token != NULL){
         node_t *list = excl;
+        int isExcl = 0;
         for( ; list != NULL; list = list->next){
-            if(strncmp(token, list->text, strlen(token)) != 0){
-                index_words = add_inorder(index_words, new_node(token));
+            if(strncmp(token, list->text, strlen(token)) == 0){
+                isExcl = 1;
+                break;
             }
+        }
+        if(!isExcl){
+            index_words = add_inorder(index_words, new_node(token));
         }
         token = strtok(NULL, " ");
     }
@@ -95,7 +100,8 @@ node_t *get_index_words(node_t *index_words, node_t *line, node_t *excl){
 
 node_t *read_excl_words(){
     node_t *excl_head = NULL;
-    char *buffer;
+    char *buffer = emalloc(sizeof(char)*MAX_LINE_LEN);
+    //char *buffer;
     size_t buffer_len;
     getline(&buffer, &buffer_len, stdin);
     if(strncmp(buffer, "1\n", buffer_len) == 0){
@@ -107,24 +113,31 @@ node_t *read_excl_words(){
     while(strncmp(buffer, "\"\"\"\"\n", buffer_len) != 0){
         //char *temp_str = emalloc(sizeof(char)*buffer_len);
         //strncpy(temp_str, buffer, buffer_len);
+        //temp_str[strlen(temp_str)-1] = '\0';
+        buffer[strlen(buffer)-1] = '\0';
         node_t *temp_node = new_node(buffer);
         excl_head = add_front(excl_head, temp_node);
         getline(&buffer, &buffer_len, stdin);
     }
+    free(buffer);
     return excl_head;
 }
 
 node_t *read_lines(){
     node_t *lines_head = NULL;
-    char *buffer;
+    //char *buffer;
+    char *buffer = emalloc(sizeof(char)*MAX_LINE_LEN);
     size_t buffer_len;
     while(getline(&buffer, &buffer_len, stdin) != -1){
         //char *temp_str = emalloc(sizeof(char)*buffer_len);
         //strncpy(temp_str, buffer, buffer_len);
+        //temp_str[strlen(temp_str)-1] = '\0';
+        buffer[strlen(buffer)-1] = '\0';
         node_t *temp_node = new_node(buffer);
         lines_head = add_end(lines_head, temp_node);
         
     }
+    free(buffer);
     return lines_head;
 }
 
@@ -143,10 +156,15 @@ int main(int argc, char *argv[]){
     
     node_t *temp_list = input_lines;
     for( ; temp_list != NULL; temp_list = temp_list->next){
+        //printf("%s\n", temp_list->text);
         index_words = get_index_words(index_words, input_lines, excl_words);
     }
     printf("%s", input_lines->text);
     printf("%s", index_words->text);
+    temp_list = index_words;
+    for( ; temp_list != NULL; temp_list = temp_list->next){
+        printf("%s\n", temp_list->text);
+    }
     free_lists(excl_words);
     free_lists(input_lines);
     free_lists(index_words);
