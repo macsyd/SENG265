@@ -67,13 +67,14 @@ node_t *add_inorder(node_t *list, node_t *new){
     node_t *curr = list;
     node_t *prev = NULL;
     for ( ; curr != NULL; curr = curr->next){
-        if(compare(curr->text, new->text) > 0){
+        if(compare(curr->text, new->text) > 0){ /*new should be before curr*/
             if(prev == NULL){
                 return add_front(curr, new);
             }
             prev->next = add_front(curr, new);
             return list;
-        }else if(compare(list->text, new->text) == 0){
+        }else if(compare(list->text, new->text) == 0){ /*new and curr have the same word*/
+            free(new);
             return list; /*get rid of duplicates*/
         }
         prev = curr;
