@@ -15,6 +15,9 @@
 
 #define MAX_WORD_LEN 40
 #define MAX_LINE_LEN 100
+#define OUTPUT_LINE_LEN 60+1
+#define OUTPUT_WORD_INDEX 30-1
+
 
 void print_word(node_t *node, void *arg)
 {
@@ -25,9 +28,9 @@ void print_word(node_t *node, void *arg)
 
 #ifdef DEBUG
 
-/*
- * Just showing the use of the linked-list routines.
- */
+
+ /* Just showing the use of the linked-list routines.*/
+ 
 
 void _demo() {
 printf("DEBUG: in _demo\n");
@@ -54,7 +57,7 @@ printf("DEBUG: in _demo\n");
         head = add_end(head, temp_node);
     }
 
-    /* Print the list of words. */
+ //ctype.h   /* Print the list of words. */
 
     apply(head, print_word, "--> %s\n");
 
@@ -88,7 +91,7 @@ node_t *get_index_words(node_t *lines, node_t *excl){
             node_t *list = excl;
             int isExcl = 0;
             for( ; list != NULL; list = list->next){
-                if(strncmp(token, list->text, strlen(token)) == 0){
+                if(compare(token, list->text) == 0){
                     isExcl = 1;
                     break;
                 }
@@ -105,7 +108,6 @@ node_t *get_index_words(node_t *lines, node_t *excl){
 node_t *read_excl_words(){
     node_t *excl_head = NULL;
     char *buffer = emalloc(sizeof(char)*MAX_LINE_LEN);
-    //char *buffer;
     size_t buffer_len;
     getline(&buffer, &buffer_len, stdin);
     if(strncmp(buffer, "1\n", buffer_len) == 0){
@@ -115,9 +117,6 @@ node_t *read_excl_words(){
     getline(&buffer, &buffer_len, stdin);
     getline(&buffer, &buffer_len, stdin);
     while(strncmp(buffer, "\"\"\"\"\n", buffer_len) != 0){
-        //char *temp_str = emalloc(sizeof(char)*buffer_len);
-        //strncpy(temp_str, buffer, buffer_len);
-        //temp_str[strlen(temp_str)-1] = '\0';
         buffer[strlen(buffer)-1] = '\0';
         node_t *temp_node = new_node(buffer);
         excl_head = add_front(excl_head, temp_node);
@@ -129,13 +128,9 @@ node_t *read_excl_words(){
 
 node_t *read_lines(){
     node_t *lines_head = NULL;
-    //char *buffer;
     char *buffer = emalloc(sizeof(char)*MAX_LINE_LEN);
     size_t buffer_len;
     while(getline(&buffer, &buffer_len, stdin) != -1){
-        //char *temp_str = emalloc(sizeof(char)*buffer_len);
-        //strncpy(temp_str, buffer, buffer_len);
-        //temp_str[strlen(temp_str)-1] = '\0';
         buffer[strlen(buffer)-1] = '\0';
         node_t *temp_node = new_node(buffer);
         lines_head = add_end(lines_head, temp_node);
@@ -146,13 +141,31 @@ node_t *read_lines(){
 }
 
 void print_line(char *word, char *line){
-    printf("%s\n", line);
+    char output[OUTPUT_LINE_LEN];
+    for(int i = 0; i < OUTPUT_LINE_LEN; i++){
+        output[i] = ' ';
+    }
+    output[OUTPUT_LINE_LEN-1] = '\0';
+    char temp[MAX_LINE_LEN];
+    strncpy(temp, line, MAX_LINE_LEN);
+    char *token = strtok(temp, " ");
+    while(token != NULL){
+        //printf(" ");
+        if(compare(word, token) == 0){
+            for(int i = 0; i < strlen(token); i++){
+                output[OUTPUT_WORD_INDEX+i] = toupper(token[i]);
+            }
+        }
+       // printf("%s", token);
+        token = strtok(NULL, " ");
+    }
+    printf("%s", output);
+    printf("\n");
 }
 
 void output_lines(node_t *list, void *lines){
     char *word = list->text;
-    node_t *temp_list = lines;
-    for( ; temp_list != NULL; temp_list = temp_list->next){
+    for(node_t *temp_list = lines; temp_list != NULL; temp_list = temp_list->next){
         char temp[MAX_LINE_LEN];
         strncpy(temp, temp_list->text, MAX_LINE_LEN);
         char *token = strtok(temp, " ");
@@ -179,13 +192,7 @@ int main(int argc, char *argv[]){
     node_t *index_words = get_index_words(input_lines, excl_words);
 
     apply(index_words, output_lines, input_lines);
-
-    //node_t *temp_list = index_words;
-    //for( ; temp_list != NULL; temp_list = temp_list->next){
-        //output_lines(temp_list->text, input_lines);
-        
-    //}
-
+    
     printf("--\n");
     node_t *temp_list = index_words;
     for( ; temp_list != NULL; temp_list = temp_list->next){
@@ -199,7 +206,7 @@ int main(int argc, char *argv[]){
  */
 
 #ifdef DEBUG
-    _demo();
+   // _demo();
 #endif
 
     exit(0);
