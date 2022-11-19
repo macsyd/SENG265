@@ -16,8 +16,8 @@
 #define MAX_WORD_LEN 40
 #define MAX_LINE_LEN 100
 #define OUTPUT_LINE_LEN 60
-#define OUTPUT_WORD_INDEX 30-1
-
+#define OUTPUT_WORD_INDEX 30
+#define SPACE 1
 
 void print_word(node_t *node, void *arg)
 {
@@ -80,6 +80,14 @@ printf("DEBUG: in _demo\n");
 
 #endif
 
+void free_lists(node_t *n){
+    while(n != NULL){
+        node_t *temp = n->next;
+        free(n);
+        n = temp;
+    }
+}
+
 node_t *get_index_words(node_t *lines, node_t *excl){
     node_t *index_words = NULL;
     node_t *temp_list = lines;
@@ -140,24 +148,35 @@ node_t *read_lines(){
     return lines_head;
 }
 
+void print_front(node_t *list){
+    char front_line[OUTPUT_WORD_INDEX];
+    for(int i = 0; i < OUTPUT_WORD_INDEX; i++){
+        front_line[i] = ' ';
+    }
+    front_line[OUTPUT_WORD_INDEX-1] = '\0';
+    int index = OUTPUT_WORD_INDEX;
+    for(node_t *temp = list; temp != NULL; temp = temp->next){
+        if(index - strlen(temp->text) - SPACE >= 10){
+	    strncpy(&front_line[index-1-SPACE-strlen(temp->text)], temp->text, strlen(temp->text));
+            index -= SPACE + strlen(temp->text);
+        } else {
+	    break;
+        }
+    }
+    free_lists(list);
+    printf("%s", front_line);
+}
+
 void print_line(char *word, char *line){
-    //printf("%s\n", line);
-    char output[OUTPUT_LINE_LEN];
     char output_word[strlen(word)+1];
     node_t *front_words = NULL;
-    for(int i = 0; i < OUTPUT_LINE_LEN; i++){
-        output[i] = ' ';
-    }
-    output[OUTPUT_LINE_LEN-1] = '\0';
     char temp[MAX_LINE_LEN];
     strncpy(temp, line, MAX_LINE_LEN);
     char *token = strtok(temp, " ");
     while(token != NULL){
-        //printf(" ");
         if(compare(word, token) == 0){
             int i;
             for(i = 0; i < strlen(token); i++){
-                //output[OUTPUT_WORD_INDEX+i] = toupper(token[i]);
                 output_word[i] = toupper(token[i]);
             }
             output_word[i] = '\0';
@@ -165,16 +184,14 @@ void print_line(char *word, char *line){
         } else {
             front_words = add_front(front_words, new_node(token));
         }
-       // printf("%s", token);
         token = strtok(NULL, " ");
     }
+    print_front(front_words);
     printf("%s", output_word);
-    int SPACE = 1;
     int index = OUTPUT_WORD_INDEX + strlen(word);
     token = strtok(NULL, " ");
     while(token != NULL){
-        if(index + SPACE + strlen(token) < OUTPUT_LINE_LEN){
-            //strncpy(&output[index + SPACE], token, strlen(token));
+        if(index + SPACE + strlen(token) <= OUTPUT_LINE_LEN){
             printf(" %s", token);
             index += SPACE + strlen(token);
         } else {
@@ -182,7 +199,6 @@ void print_line(char *word, char *line){
         }
         token = strtok(NULL, " ");
     }
-    printf("%s", output);
     printf("\n");
 }
 
@@ -201,14 +217,6 @@ void output_lines(node_t *list, void *lines){
     }
 }
 
-void free_lists(node_t *n){
-    while(n != NULL){
-        node_t *temp = n->next;
-        free(n);
-        n = temp;
-    }
-}
-
 int main(int argc, char *argv[]){
     node_t *excl_words = read_excl_words();
     node_t *input_lines = read_lines();
@@ -216,11 +224,6 @@ int main(int argc, char *argv[]){
 
     apply(index_words, output_lines, input_lines);
     
-    printf("--\n");
-    node_t *temp_list = index_words;
-    for( ; temp_list != NULL; temp_list = temp_list->next){
-        printf("%s\n", temp_list->text);
-    }
     free_lists(excl_words);
     free_lists(input_lines);
     free_lists(index_words);
