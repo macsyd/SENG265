@@ -76,7 +76,6 @@ node_t *add_inorder(node_t *list, node_t *new){
             prev->next = add_front(curr, new);
             return list;
         }else if(compare(new->text, curr->text) == 0){ /*new and curr have the same word*/
-            //printf("it's a duplicate of %s: ", curr->text);
             free(new);
             return list; /*get rid of duplicates*/
         }
