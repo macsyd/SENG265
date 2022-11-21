@@ -26,17 +26,19 @@ node_t *new_node(char *text) {
 }
 
 int compare(char *str1, char *str2){
-    char temp1[strlen(str1)];
+    char temp1[strlen(str1)+1];
     strncpy(temp1, str1, strlen(str1));
-    char temp2[strlen(str2)];
+    temp1[strlen(str1)] = '\0';
+    char temp2[strlen(str2)+1];
     strncpy(temp2, str2, strlen(str2));
+    temp2[strlen(str2)] = '\0';
     for(int i = 0; i < strlen(str1); i++){
         temp1[i] = toupper(temp1[i]);
     }
-    for(int j = 0; j < strlen(str2); j++){
-        temp2[j] = toupper(temp2[j]);
+    for(int i = 0; i < strlen(str2); i++){
+        temp2[i] = toupper(temp2[i]);
     }
-    return(strncmp(temp1, temp2, strlen(str1)));
+    return(strncmp(temp1, temp2, strlen(str1) > strlen(str2) ? strlen(str1) : strlen(str2)));
 }
 
 node_t *add_front(node_t *list, node_t *new) {
@@ -73,7 +75,8 @@ node_t *add_inorder(node_t *list, node_t *new){
             }
             prev->next = add_front(curr, new);
             return list;
-        }else if(compare(curr->text, new->text) == 0){ /*new and curr have the same word*/
+        }else if(compare(new->text, curr->text) == 0){ /*new and curr have the same word*/
+            //printf("it's a duplicate of %s: ", curr->text);
             free(new);
             return list; /*get rid of duplicates*/
         }

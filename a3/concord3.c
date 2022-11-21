@@ -15,7 +15,7 @@
 
 #define MAX_WORD_LEN 40
 #define MAX_LINE_LEN 100
-#define OUTPUT_LINE_LEN 60
+#define OUTPUT_LINE_LEN 60 + 1
 #define OUTPUT_WORD_INDEX 30
 #define SPACE 1
 
@@ -82,12 +82,15 @@ printf("DEBUG: in _demo\n");
 
 void free_lists(node_t *n){
     while(n != NULL){
-        node_t *temp = n->next;
+        assert(n != NULL);
+        node_t *temp = remove_front(n);
         free(n);
         n = temp;
     }
 }
 
+/*Loops through each line and adds all words that aren't exclusion
+ * words to a list*/
 node_t *get_index_words(node_t *lines, node_t *excl){
     node_t *index_words = NULL;
     node_t *temp_list = lines;
@@ -106,6 +109,7 @@ node_t *get_index_words(node_t *lines, node_t *excl){
             }
             if(!isExcl){
                 index_words = add_inorder(index_words, new_node(token));
+                //printf("%s\n", token);
             }
             token = strtok(NULL, " ");
         }
@@ -113,10 +117,12 @@ node_t *get_index_words(node_t *lines, node_t *excl){
     return index_words;
 }
 
+/*Checks version then reads in lines and adds to a list
+ * of exclusion words until it reaches """" */
 node_t *read_excl_words(){
     node_t *excl_head = NULL;
     char *buffer = emalloc(sizeof(char)*MAX_LINE_LEN);
-    size_t buffer_len;
+    size_t buffer_len = MAX_LINE_LEN;
     getline(&buffer, &buffer_len, stdin);
     if(strncmp(buffer, "1\n", buffer_len) == 0){
         printf("Input is version 1, concord3 expected version 2\n");
@@ -134,10 +140,11 @@ node_t *read_excl_words(){
     return excl_head;
 }
 
+/*Reads in lines and adds them to a list*/
 node_t *read_lines(){
     node_t *lines_head = NULL;
     char *buffer = emalloc(sizeof(char)*MAX_LINE_LEN);
-    size_t buffer_len;
+    size_t buffer_len = MAX_LINE_LEN;
     while(getline(&buffer, &buffer_len, stdin) != -1){
         buffer[strlen(buffer)-1] = '\0';
         node_t *temp_node = new_node(buffer);
@@ -148,6 +155,8 @@ node_t *read_lines(){
     return lines_head;
 }
 
+/*Prints the first words in a line before the 
+ *indexed word*/
 void print_front(node_t *list){
     char front_line[OUTPUT_WORD_INDEX];
     for(int i = 0; i < OUTPUT_WORD_INDEX; i++){
@@ -156,9 +165,11 @@ void print_front(node_t *list){
     front_line[OUTPUT_WORD_INDEX-1] = '\0';
     int index = OUTPUT_WORD_INDEX;
     for(node_t *temp = list; temp != NULL; temp = temp->next){
-        if(index - strlen(temp->text) - SPACE >= 10){
-	    strncpy(&front_line[index-1-SPACE-strlen(temp->text)], temp->text, strlen(temp->text));
-            index -= SPACE + strlen(temp->text);
+        index -= SPACE + strlen(temp->text);
+        //if((index - strlen(temp->text) - SPACE) >= 10){
+        if(index >= 10){
+	    strncpy(&front_line[index-1/*-SPACE-strlen(temp->text)*/], temp->text, strlen(temp->text));
+            //index -= SPACE + strlen(temp->text);
         } else {
 	    break;
         }
@@ -167,6 +178,7 @@ void print_front(node_t *list){
     printf("%s", front_line);
 }
 
+/*Prints a formatted line to stdout*/
 void print_line(char *word, char *line){
     char output_word[strlen(word)+1];
     node_t *front_words = NULL;
@@ -186,14 +198,16 @@ void print_line(char *word, char *line){
         }
         token = strtok(NULL, " ");
     }
+    //printf("1234567890123456789012345678901234567890123456789012345678901234567890\n");
     print_front(front_words);
     printf("%s", output_word);
     int index = OUTPUT_WORD_INDEX + strlen(word);
     token = strtok(NULL, " ");
     while(token != NULL){
-        if(index + SPACE + strlen(token) <= OUTPUT_LINE_LEN){
+        index += SPACE + strlen(token);
+        if(index <= OUTPUT_LINE_LEN){
             printf(" %s", token);
-            index += SPACE + strlen(token);
+            //index += SPACE + strlen(token);
         } else {
             break;
         }
@@ -202,6 +216,8 @@ void print_line(char *word, char *line){
     printf("\n");
 }
 
+/*Takes a word and finds all lines that contain
+ * it, then calls print_line to print them*/
 void output_lines(node_t *list, void *lines){
     char *word = list->text;
     for(node_t *temp_list = lines; temp_list != NULL; temp_list = temp_list->next){
