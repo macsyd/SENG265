@@ -9,4 +9,5 @@ class concord:
         # self.determine_index_words()
 
     def full_concordance(self):
-        return []
+        output_lines = []
+        return output_lines
