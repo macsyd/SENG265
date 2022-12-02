@@ -43,7 +43,7 @@ class concord:
             [index_words.append(each) for each in temp_line if (each not in excl)]
         return index_words
 
-    def __output_lines(self):
+    def __output_lines(self, word):
         
 
     def full_concordance(self):
@@ -51,6 +51,6 @@ class concord:
         excl_words = self.__get_excl_words()
         input_lines = self.__get_input_lines()
         index_words = self.__get_index_words(input_lines, excl_words)
-        [output_lines for each in index_words]
+        [self.output_lines(each) for each in index_words]
         return ["hello", "this worked"]
         #return output_lines
