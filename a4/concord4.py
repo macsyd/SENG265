@@ -11,8 +11,17 @@ class concord:
         self.input = input
         self.all_lines = self.__get_all_lines(self.input)
         self.output = output
-        #self.excl_words = get_excl_words()
-        #self.index_words = get_index_words()
+        if(self.output != None):
+            self.__output_to_file()
+
+    def __output_to_file(self):
+        f = open(self.output, "w")
+        if(f == None):
+            print("Did not open file correctly")
+            exit()
+        results = self.full_concordance()
+        [f.write(each + "\n") for each in results]
+        f.close()
 
     def __get_all_lines(self, input):
         all_lines = []
@@ -21,6 +30,9 @@ class concord:
                 all_lines.append(each.strip())
         else:
             f = open(input, "r")
+            if(f == None):
+                print("Did not open file correctly")
+                exit()
             lines = f.readlines()
             f.close()
             for each in lines:
@@ -58,7 +70,6 @@ class concord:
         return index_words
 
     def __format_line(self, word, line, word_pattern):
-        #output = re.sub(word_pattern, word, line)
         match = re.search(r"^(.*)" + word + "(.*)$", line, re.IGNORECASE)
         front_line = match.group(1)
         while(len(front_line) > FRONT_LINE_LEN):
@@ -67,9 +78,7 @@ class concord:
         back_line = match.group(2)
         while((len(back_line)+len(word)) > BACK_LINE_LEN):
             back_line = re.sub(r" \w+$", "", back_line)
-        
         output = "".join([front_line, word, back_line])
-        #output = re.sub(r"", " "*num, output)
         return output
 
     def __output_lines(self, word, lines):
@@ -87,5 +96,4 @@ class concord:
         input_lines = self.__get_input_lines()
         index_words = self.__get_index_words(input_lines, excl_words)
         [output_lines.extend(self.__output_lines(each, input_lines)) for each in index_words]
-        #print("1234567890123456789012345678901234567890123456789012345678901234567890")
         return output_lines
