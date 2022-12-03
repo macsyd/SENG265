@@ -1,6 +1,10 @@
 import sys
 import re
 
+#define constants
+FRONT_LINE_LEN = 20
+BACK_LINE_LEN = 30+1
+
 class concord:
 
     def __init__(self, input=None, output=None):
@@ -36,21 +40,52 @@ class concord:
         excl_words = self.all_lines[2:index]
         return excl_words
 
+    def __check_excl(self, excl, word):
+        for each in excl:
+            m = re.match(word, each, re.IGNORECASE)
+            if m:
+                return False
+        return True
+
     def __get_index_words(self, lines, excl):
         index_words = []
-        for each in lines:
-            temp_line = each.split(" ")
-            [index_words.append(each) for each in temp_line if (each not in excl)]
+        for each_line in lines:
+            temp_line = each_line.split(" ")
+            [index_words.append(each.upper()) for each in temp_line if self.__check_excl(excl, each)]
+        index_words = set(index_words)
+        index_words = list(index_words)
+        index_words.sort()
         return index_words
 
-    def __output_lines(self, word):
+    def __format_line(self, word, line, word_pattern):
+        #output = re.sub(word_pattern, word, line)
+        match = re.search(r"^(.*)" + word + "(.*)$", line, re.IGNORECASE)
+        front_line = match.group(1)
+        while(len(front_line) > FRONT_LINE_LEN):
+            front_line = re.sub(r"^\w+ ", "", front_line)
+        front_line = "".join([" "*(10+FRONT_LINE_LEN-len(front_line)-1), front_line])
+        back_line = match.group(2)
+        while((len(back_line)+len(word)) > BACK_LINE_LEN):
+            back_line = re.sub(r" \w+$", "", back_line)
         
+        output = "".join([front_line, word, back_line])
+        #output = re.sub(r"", " "*num, output)
+        return output
+
+    def __output_lines(self, word, lines):
+        output = []
+        word_pattern = re.compile(r"\b" + re.escape(word) + r"\b", re.I)
+        for each_line in lines:
+            m = word_pattern.search(each_line)
+            if m:
+                output.append(self.__format_line(word, each_line, word_pattern))
+        return output
 
     def full_concordance(self):
         output_lines = []
         excl_words = self.__get_excl_words()
         input_lines = self.__get_input_lines()
         index_words = self.__get_index_words(input_lines, excl_words)
-        [self.output_lines(each) for each in index_words]
-        return ["hello", "this worked"]
-        #return output_lines
+        [output_lines.extend(self.__output_lines(each, input_lines)) for each in index_words]
+        #print("1234567890123456789012345678901234567890123456789012345678901234567890")
+        return output_lines
