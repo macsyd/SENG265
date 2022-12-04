@@ -6,9 +6,9 @@ FRONT_LINE_LEN = 20
 BACK_LINE_LEN = 30+1
 
 class concord:
-        '''
-        Class that creates a full concordance from text input.
-        '''
+    '''
+    Class that creates a full concordance from text input.
+    '''
 
     def __init__(self, input=None, output=None):
         '''
