@@ -6,8 +6,19 @@ FRONT_LINE_LEN = 20
 BACK_LINE_LEN = 30+1
 
 class concord:
+        '''
+        Class that creates a full concordance from text input.
+        '''
 
     def __init__(self, input=None, output=None):
+        '''
+        Concord class constructor that initializes attributes:
+            self.input: path to the input file or stdin
+            self.output: path to the output file or None
+            self.all_lines: list of all lines in input
+        
+        Writes to the output file if one is provided.
+        '''
         self.input = input
         self.all_lines = self.__get_all_lines(self.input)
         self.output = output
@@ -15,6 +26,9 @@ class concord:
             self.__output_to_file()
 
     def __output_to_file(self):
+        '''
+        Writes the results of full_concordance to the given file.
+        '''
         f = open(self.output, "w")
         if(f == None):
             print("Did not open file correctly")
@@ -24,6 +38,9 @@ class concord:
         f.close()
 
     def __get_all_lines(self, input):
+        '''
+        Returns a list of all lines in either the input file or stdin if no file is given.
+        '''
         all_lines = []
         if(input == None):
             for each in sys.stdin:
@@ -43,16 +60,25 @@ class concord:
         return all_lines
 
     def __get_input_lines(self):
+        '''
+        Returns a list of all lines to index from the input.
+        '''
         index = self.all_lines.index("\"\"\"\"")
         input_lines = self.all_lines[index+1:]
         return input_lines
 
     def __get_excl_words(self):
+        '''
+        Returns a list of all the exclusion words from the input.
+        '''
         index = self.all_lines.index("\"\"\"\"")
         excl_words = self.all_lines[2:index]
         return excl_words
 
     def __check_excl(self, excl, word):
+        '''
+        Checks if a given word is in the list of exclusion words.
+        '''
         for each in excl:
             m = re.match(word, each, re.IGNORECASE)
             if m:
@@ -60,6 +86,10 @@ class concord:
         return True
 
     def __get_index_words(self, lines, excl):
+        '''
+        For each word in each line of the provided lines, checks if it is an exclusion word.
+        If it is not, adds it to a list and returns this list once all words have been checked.
+        '''
         index_words = []
         for each_line in lines:
             temp_line = each_line.split(" ")
@@ -70,6 +100,10 @@ class concord:
         return index_words
 
     def __format_line(self, word, line, word_pattern):
+        '''
+        Splits line into three parts, removes extra words from the front and back part, 
+        adds spaces to the front part, joins the parts into one string, and returns the formatted string.
+        '''
         match = re.search(r"^(.*)" + word + "(.*)$", line, re.IGNORECASE)
         front_line = match.group(1)
         while(len(front_line) > FRONT_LINE_LEN):
@@ -82,6 +116,10 @@ class concord:
         return output
 
     def __output_lines(self, word, lines):
+        '''
+        Given a word, searches for it in each element of lines.
+        Returns a list of strings for each time word appears in a line.
+        '''
         output = []
         word_pattern = re.compile(r"\b" + re.escape(word) + r"\b", re.I)
         for each_line in lines:
@@ -91,6 +129,10 @@ class concord:
         return output
 
     def full_concordance(self):
+        '''
+        Gets lists of exclusion words, input lines, and words to index.
+        Returns a list of strings (the concordance).
+        '''
         output_lines = []
         excl_words = self.__get_excl_words()
         input_lines = self.__get_input_lines()
